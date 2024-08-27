@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live HLS Stream Example</title>
+    <title>Live HLS Stream with Custom Headers</title>
     <!-- Include Video.js CSS -->
     <link href="https://vjs.zencdn.net/8.0.4/video-js.css" rel="stylesheet" />
     <style>
@@ -15,12 +15,11 @@
     </style>
 </head>
 <body>
-    <h1>Live HLS Stream Example</h1>
+    <h1>Live HLS Stream with Custom Headers</h1>
     <div class="video-container">
         <!-- Video.js player -->
         <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
-            <!-- Source will be added via JavaScript -->
-            <source id="video-source" type="application/x-mpegURL">
+            <!-- The source will be added dynamically -->
             Your browser does not support the video tag.
         </video>
     </div>
@@ -30,28 +29,61 @@
     <!-- Include Hls.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
-        // Initialize Video.js
-        var player = videojs('my-video');
-
-        // Check if Hls.js is supported
-        if (Hls.isSupported()) {
-            var hls = new Hls();
+        document.addEventListener('DOMContentLoaded', function() {
             var video = document.getElementById('my-video');
 
-            hls.loadSource('https://top2.mizhls.ru/top2/ustvtlc/tracks-v1a1/mono.m3u8');
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                player.play();
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            // HLS is natively supported in Safari
-            player.src({
-                src: 'https://top2.mizhls.ru/top2/ustvtlc/tracks-v1a1/mono.m3u8',
-                type: 'application/x-mpegURL'
-            });
-        } else {
-            console.error('HLS is not supported in this browser.');
-        }
+            if (Hls.isSupported()) {
+                // Create an instance of Hls.js
+                var hls = new Hls();
+
+                // Add custom headers configuration
+                hls.config = {
+                    xhrSetup: function(xhr, url) {
+                        xhr.setRequestHeader('Referer', 'https://topembed.pw/');
+                        xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0');
+                    }
+                };
+
+                // Bind event listeners
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.fatal) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.error("Network error:", data);
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.error("Media error:", data);
+                                break;
+                            case Hls.ErrorTypes.OTHER_ERROR:
+                                console.error("Other error:", data);
+                                break;
+                            default:
+                                console.error("Unhandled error:", data);
+                        }
+                    }
+                });
+
+                // Load the HLS stream
+                hls.loadSource('https://top2.mizhls.ru/top2/ustvtlc/tracks-v1a1/mono.m3u8');
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    video.play().catch(function(error) {
+                        console.error("Playback error:", error);
+                    });
+                });
+
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS support (e.g., Safari)
+                video.src = 'https://top2.mizhls.ru/top2/ustvtlc/tracks-v1a1/mono.m3u8';
+                video.addEventListener('loadedmetadata', function () {
+                    video.play().catch(function(error) {
+                        console.error("Playback error:", error);
+                    });
+                });
+            } else {
+                console.error('HLS is not supported in this browser.');
+            }
+        });
     </script>
 </body>
 </html>
