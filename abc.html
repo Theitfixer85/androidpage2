@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live HLS Stream Player with Custom Headers</title>
+    <title>Live HLS Stream Player</title>
     <!-- Include hls.js library from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
@@ -43,7 +43,7 @@
                 // For other browsers, use hls.js
                 var hls = new Hls({
                     xhrSetup: function(xhr, url) {
-                        xhr.setRequestHeader('Referer', 'https://topembed.pw/');
+                        // xhr.setRequestHeader('Referer', 'https://topembed.pw/'); // Cannot set this manually
                         xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0');
                     }
                 });
