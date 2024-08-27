@@ -2,40 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Embed Content</title>
+    <title>Embed Video</title>
     <style>
-        #content {
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        iframe {
             width: 100%;
-            height: 100vh;
-            overflow: auto;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
-    <div id="content"></div>
-    <script>
-        async function loadContent() {
-            try {
-                const response = await fetch('https://topembed.pw/channel/AbcTv[USA]', {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'text/html' // Adjust this if you expect a different content type
-                    }
-                });
-
-                if (response.ok) {
-                    const html = await response.text();
-                    document.getElementById('content').innerHTML = html;
-                } else {
-                    console.error('Failed to fetch content:', response.status);
-                }
-            } catch (error) {
-                console.error('Error fetching content:', error);
-            }
-        }
-
-        loadContent();
-    </script>
+    <iframe src="https://topembed.pw/channel/AbcTv[USA]"></iframe>
 </body>
 </html>
