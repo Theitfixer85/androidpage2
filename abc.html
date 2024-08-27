@@ -3,24 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="origin">
-    <title>Full Page</title>
+    <title>Embed Content</title>
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        iframe {
+        #content {
             width: 100%;
-            height: 100%;
-            border: none;
+            height: 100vh;
+            overflow: auto;
         }
     </style>
 </head>
 <body>
-    <iframe src="https://topembed.pw/channel/AbcTv[USA]" allowfullscreen></iframe>
+    <div id="content"></div>
+    <script>
+        async function loadContent() {
+            try {
+                const response = await fetch('https://topembed.pw/channel/AbcTv[USA]', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'text/html' // Adjust this if you expect a different content type
+                    }
+                });
+
+                if (response.ok) {
+                    const html = await response.text();
+                    document.getElementById('content').innerHTML = html;
+                } else {
+                    console.error('Failed to fetch content:', response.status);
+                }
+            } catch (error) {
+                console.error('Error fetching content:', error);
+            }
+        }
+
+        loadContent();
+    </script>
 </body>
 </html>
