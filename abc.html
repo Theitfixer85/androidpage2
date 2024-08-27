@@ -2,44 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal HLS Stream Test</title>
+    <title>Live HLS Stream Player with Custom Headers</title>
+    <!-- Include hls.js library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        video {
+            width: 640px;
+            height: 360px;
+            background-color: black;
+        }
+    </style>
 </head>
 <body>
-    <h1>Minimal HLS Stream Test</h1>
-    <video id="my-video" controls width="640" height="360">
-        <!-- The source will be added dynamically -->
-        Your browser does not support the video tag.
-    </video>
-
-    <!-- Include Hls.js -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <h1>DAZN 1 UK Live Stream</h1>
+    <!-- Video element -->
+    <video id="video" controls></video>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var video = document.getElementById('my-video');
+        document.addEventListener('DOMContentLoaded', function () {
+            var video = document.getElementById('video');
+            var videoSrc = 'https://topembed.mizhls.ru/lb/dazn1uk/playlist.m3u8';
 
-            if (Hls.isSupported()) {
-                var hls = new Hls();
-
-                hls.config = {
-                    xhrSetup: function(xhr) {
+            // Check if HLS is supported natively
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Safari supports HLS natively
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play();
+                });
+            } else if (Hls.isSupported()) {
+                // For other browsers, use hls.js
+                var hls = new Hls({
+                    xhrSetup: function(xhr, url) {
                         xhr.setRequestHeader('Referer', 'https://topembed.pw/');
-                        xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0');
-                    }
-                };
-
-                hls.on(Hls.Events.ERROR, function (event, data) {
-                    if (data.fatal) {
-                        console.error('Hls.js error:', data);
+                        xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0');
                     }
                 });
 
-                hls.loadSource('https://top2.mizhls.ru/top2/ustvtlc/tracks-v1a1/mono.m3u8');
+                hls.loadSource(videoSrc);
                 hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                    video.play().catch(function(error) {
-                        console.error('Playback error:', error);
-                    });
+                    video.play();
                 });
             } else {
                 console.error('HLS is not supported in this browser.');
