@@ -33,18 +33,20 @@
             var video = document.getElementById('my-video');
 
             if (Hls.isSupported()) {
-                // Create an instance of Hls.js
                 var hls = new Hls();
 
-                // Add custom headers configuration
+                // Configure custom headers
                 hls.config = {
                     xhrSetup: function(xhr, url) {
                         xhr.setRequestHeader('Referer', 'https://topembed.pw/');
                         xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0');
+                        // Optionally log headers to ensure they are being set
+                        console.log('Setting custom headers');
+                        console.log('Referer:', 'https://topembed.pw/');
+                        console.log('User-Agent:', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0');
                     }
                 };
 
-                // Bind event listeners
                 hls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
                         switch (data.fatal) {
@@ -63,7 +65,7 @@
                     }
                 });
 
-                // Load the HLS stream
+                // Load and attach the HLS stream
                 hls.loadSource('https://top2.mizhls.ru/top2/ustvtlc/tracks-v1a1/mono.m3u8');
                 hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, function () {
@@ -73,7 +75,7 @@
                 });
 
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Native HLS support (e.g., Safari)
+                // For browsers with native HLS support
                 video.src = 'https://top2.mizhls.ru/top2/ustvtlc/tracks-v1a1/mono.m3u8';
                 video.addEventListener('loadedmetadata', function () {
                     video.play().catch(function(error) {
